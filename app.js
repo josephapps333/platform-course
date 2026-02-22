@@ -41,14 +41,92 @@ const VIDEOS = [
 
 
 /* ── App State ──────────────────────────────────────────────── */
-let activeIndex = 0;
+let activeIndex  = 0;
+let currentUser  = null;
+let hasAccess    = false;
+let accessUnsub  = null; // Firestore listener unsubscribe fn
 
 /* ── DOM Refs ───────────────────────────────────────────────── */
-const player     = document.getElementById("main-player");
-const titleEl    = document.getElementById("current-title");
-const subtitleEl = document.getElementById("current-subtitle");
-const listEl     = document.getElementById("sidebar-list");
-const countEl    = document.getElementById("sidebar-count");
+const player        = document.getElementById("main-player");
+const titleEl       = document.getElementById("current-title");
+const subtitleEl    = document.getElementById("current-subtitle");
+const listEl        = document.getElementById("sidebar-list");
+const countEl       = document.getElementById("sidebar-count");
+const paywallModal  = document.getElementById("paywall-modal");
+const buyBtn        = document.getElementById("btn-buy");
+const closePaywall  = document.getElementById("btn-close-paywall");
+const successBanner = document.getElementById("success-banner");
+
+/* ── Paywall show / hide ────────────────────────────────────── */
+function showPaywall() {
+  paywallModal.classList.add("visible");
+}
+
+function hidePaywall() {
+  paywallModal.classList.remove("visible");
+}
+
+closePaywall.addEventListener("click", hidePaywall);
+
+// Close on backdrop click
+paywallModal.addEventListener("click", e => {
+  if (e.target === paywallModal) hidePaywall();
+});
+
+/* ── Buy Access ─────────────────────────────────────────────── */
+buyBtn.addEventListener("click", buyAccess);
+
+async function buyAccess() {
+  buyBtn.textContent = "Redirecting to checkout…";
+  buyBtn.disabled    = true;
+
+  try {
+    const res  = await fetch("/create-checkout", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ uid: currentUser.uid, email: currentUser.email })
+    });
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || "Unknown error");
+    }
+  } catch (err) {
+    console.error("Buy error:", err);
+    buyBtn.textContent = "Buy Now — $29.90";
+    buyBtn.disabled    = false;
+    alert("Something went wrong. Please try again.");
+  }
+}
+
+/* ── Firestore Access Listener ──────────────────────────────── */
+function listenAccess(uid) {
+  if (accessUnsub) accessUnsub(); // detach any previous listener
+  accessUnsub = db.collection("users").doc(uid).onSnapshot(doc => {
+    const wasPaid = hasAccess;
+    hasAccess = doc.exists && doc.data().paid === true;
+
+    if (hasAccess && !wasPaid) {
+      // Just unlocked — rebuild sidebar and close paywall
+      buildSidebar();
+      hidePaywall();
+    } else if (!wasPaid) {
+      buildSidebar();
+    }
+  });
+}
+
+/* ── Bunny.net Ended Event Listener ────────────────────────── */
+window.addEventListener("message", e => {
+  try {
+    const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data;
+    // Bunny.net sends { event: "ended" } when a video finishes
+    if (data && data.event === "ended" && activeIndex === 0 && !hasAccess) {
+      showPaywall();
+    }
+  } catch (_) { /* ignore non-JSON messages */ }
+});
 
 /* ── Build Sidebar ──────────────────────────────────────────── */
 function buildSidebar() {
@@ -56,20 +134,28 @@ function buildSidebar() {
   countEl.textContent = VIDEOS.length + " videos";
 
   VIDEOS.forEach((v, i) => {
+    const isLocked = i > 0 && !hasAccess;
+
     const card = document.createElement("div");
-    card.className = "video-card" + (i === activeIndex ? " active" : "");
+    card.className = "video-card"
+      + (i === activeIndex ? " active"  : "")
+      + (isLocked          ? " locked"  : "");
     card.dataset.index = i;
 
-    const thumbHtml = v.thumb
-      ? `<img src="${escHtml(v.thumb)}" alt="" loading="lazy" />`
-      : `<span class="card-thumb-icon">&#9654;</span>`;
+    const thumbHtml = isLocked
+      ? `<span class="lock-icon">&#128274;</span>`
+      : (v.thumb
+          ? `<img src="${escHtml(v.thumb)}" alt="" loading="lazy" />`
+          : `<span class="card-thumb-icon">&#9654;</span>`);
 
     card.innerHTML = `
       <span class="card-num">${i + 1}</span>
       <div class="card-thumb">${thumbHtml}</div>
       <div class="card-info">
         <div class="card-title">${escHtml(v.title)}</div>
-        ${v.duration ? `<div class="card-duration">${escHtml(v.duration)}</div>` : ""}
+        ${isLocked
+          ? `<div class="card-locked-label">Premium</div>`
+          : (v.duration ? `<div class="card-duration">${escHtml(v.duration)}</div>` : "")}
       </div>`;
 
     card.addEventListener("click", () => loadVideo(i));
@@ -80,11 +166,18 @@ function buildSidebar() {
 /* ── Load a Video ───────────────────────────────────────────── */
 function loadVideo(index) {
   if (index < 0 || index >= VIDEOS.length) return;
+
+  // Block locked lessons
+  if (index > 0 && !hasAccess) {
+    showPaywall();
+    return;
+  }
+
   activeIndex = index;
   const v = VIDEOS[index];
 
   player.src = v.url;
-  titleEl.textContent = v.title;
+  titleEl.textContent  = v.title;
   subtitleEl.textContent = v.duration ? "Duration: " + v.duration : "";
 
   // Update active card styling
@@ -113,8 +206,21 @@ function escHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
+/* ── Payment Success Banner ─────────────────────────────────── */
+function checkPaymentSuccess() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("payment") === "success") {
+    window.history.replaceState({}, "", window.location.pathname);
+    successBanner.classList.add("visible");
+    setTimeout(() => successBanner.classList.remove("visible"), 5000);
+  }
+}
+
 /* ── Init (called by auth.js once the user is signed in) ────── */
-function initApp() {
+function initApp(user) {
+  currentUser = user;
+  listenAccess(user.uid);
   buildSidebar();
   loadVideo(0);
+  checkPaymentSuccess();
 }

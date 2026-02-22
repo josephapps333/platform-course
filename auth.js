@@ -34,8 +34,8 @@ firebase.auth().onAuthStateChanged(user => {
     avatarImg.style.display = user.photoURL ? "block" : "none";
     displayName.textContent = user.displayName || user.email;
 
-    // Boot the video player (only once)
-    if (typeof initApp === "function") initApp();
+    // Boot the video player (only once), passing the user object
+    if (typeof initApp === "function") initApp(user);
   } else {
     // Show login screen, hide app
     loginScreen.style.display = "flex";

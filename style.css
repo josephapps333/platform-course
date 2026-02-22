@@ -349,6 +349,151 @@ html, body {
   color: var(--text-muted);
 }
 
+/* ── Locked Card ──────────────────────────────────────────── */
+.video-card.locked {
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.video-card.locked:hover { opacity: 0.8; }
+
+.lock-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.card-locked-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Paywall Modal ────────────────────────────────────────── */
+#paywall-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+#paywall-modal.visible { display: flex; }
+
+.paywall-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px 36px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.paywall-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.paywall-close:hover { color: var(--text); }
+
+.paywall-icon {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.paywall-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.paywall-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.paywall-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.paywall-price span {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.paywall-features {
+  list-style: none;
+  text-align: left;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paywall-features li {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.btn-buy {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-buy:hover:not(:disabled) { background: var(--accent-hover); }
+.btn-buy:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Success Banner ───────────────────────────────────────── */
+#success-banner {
+  position: fixed;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a7f3c;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 300;
+  transition: bottom 0.4s ease;
+  white-space: nowrap;
+}
+
+#success-banner.visible { bottom: 28px; }
+
 /* ── Responsive ───────────────────────────────────────────── */
 
 /* Tablet: narrow the sidebar a bit */
