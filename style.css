@@ -1,0 +1,285 @@
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #0f0f0f;
+  --surface:     #181818;
+  --surface-2:   #222222;
+  --border:      #2a2a2a;
+  --accent:      #e50914;
+  --accent-hover:#ff1a26;
+  --text:        #e5e5e5;
+  --text-muted:  #888;
+  --sidebar-w:   340px;
+  --thumb-h:     68px;
+  --topbar-h:    53px; /* single source of truth for topbar height */
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.4;
+}
+
+/* ── Top Bar ──────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--topbar-h);
+  padding: 0 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+/* ── Main Layout ──────────────────────────────────────────── */
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ── Player Column ────────────────────────────────────────── */
+.player-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.player-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.player-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-meta {
+  margin-top: 16px;
+}
+
+.video-meta h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.video-meta p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  /* 100dvh falls back to 100vh on browsers without dvh support;
+     dvh accounts for the collapsing address bar on iOS Safari */
+  height: calc(100dvh - var(--topbar-h) - 48px);
+  height: calc(100vh  - var(--topbar-h) - 48px);
+  position: sticky;
+  top: calc(var(--topbar-h) + 24px);
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-radius: 8px 8px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.sidebar-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+.sidebar-list::-webkit-scrollbar { width: 4px; }
+.sidebar-list::-webkit-scrollbar-track { background: transparent; }
+.sidebar-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.sidebar-list::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Video Card ───────────────────────────────────────────── */
+.video-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  min-height: 44px; /* accessible touch target */
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.video-card:last-child { border-bottom: none; }
+
+.video-card:hover { background: var(--surface-2); }
+
+.video-card.active {
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+}
+
+.video-card.active .card-num { color: var(--accent); }
+
+.card-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 20px;
+  text-align: center;
+}
+
+.card-thumb {
+  width: 108px;
+  height: var(--thumb-h);
+  background: var(--surface-2);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Fallback icon when no thumbnail */
+.card-thumb-icon {
+  font-size: 22px;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* Playing indicator overlay */
+.video-card.active .card-thumb::after {
+  content: "▶";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(229, 9, 20, 0.7);
+  font-size: 20px;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.card-info { flex: 1; min-width: 0; }
+
+.card-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+
+.card-duration {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+/* Tablet: narrow the sidebar a bit */
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 280px; }
+  .card-thumb { width: 90px; }
+}
+
+/* Phablet / landscape phone: stack layout */
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+    align-items: stretch; /* make children fill the full container width */
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .player-col { width: 100%; }
+
+  .sidebar {
+    width: 100%;
+    height: 360px;
+    position: static;
+    top: unset;
+  }
+
+  .video-meta h1 { font-size: 1.05rem; }
+}
+
+/* Small phone */
+@media (max-width: 480px) {
+  .topbar { padding: 0 14px; }
+  .layout  { padding: 10px; gap: 12px; }
+  .sidebar { height: 300px; }
+
+  /* Hide thumbnail on very small screens to give titles more room */
+  .card-thumb { display: none; }
+  .card-num   { min-width: 16px; font-size: 0.7rem; }
+  .card-title { font-size: 0.85rem; }
+}

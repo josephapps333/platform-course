@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stream</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Top Bar ─────────────────────────────────────────────────── -->
+<header class="topbar">
+  <div class="topbar-logo">&#9654; Stream</div>
+</header>
+
+<!-- ── Main Layout ────────────────────────────────────────────── -->
+<div class="layout">
+
+  <!-- Player column -->
+  <div class="player-col">
+    <div class="player-wrapper">
+      <iframe id="main-player"
+        src=""
+        allowfullscreen
+        allow="autoplay"
+        loading="lazy">
+      </iframe>
+    </div>
+    <div class="video-meta">
+      <h1 id="current-title"></h1>
+      <p id="current-subtitle"></p>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Up Next</h2>
+      <span class="sidebar-count" id="sidebar-count"></span>
+    </div>
+    <div class="sidebar-list" id="sidebar-list"></div>
+  </aside>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
