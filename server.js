@@ -8,7 +8,6 @@ const app    = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 /* ── Firebase Admin ─────────────────────────────────────────── */
-console.log('ENV KEYS:', Object.keys(process.env).sort().join(', '));
 const serviceAccountB64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
 if (!serviceAccountB64) {
   console.error('ERROR: Missing FIREBASE_SERVICE_ACCOUNT_BASE64 env var');
