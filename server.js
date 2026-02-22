@@ -8,25 +8,13 @@ const app    = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 /* ── Firebase Admin ─────────────────────────────────────────── */
-const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
-
-console.log('FIREBASE_PROJECT_ID  set:', !!FIREBASE_PROJECT_ID,  '| length:', FIREBASE_PROJECT_ID?.length  ?? 0);
-console.log('FIREBASE_CLIENT_EMAIL set:', !!FIREBASE_CLIENT_EMAIL, '| length:', FIREBASE_CLIENT_EMAIL?.length ?? 0);
-console.log('FIREBASE_PRIVATE_KEY  set:', !!FIREBASE_PRIVATE_KEY,  '| length:', FIREBASE_PRIVATE_KEY?.length  ?? 0);
-
-if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
-  console.error('ERROR: Missing one or more Firebase env vars: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
+const serviceAccountB64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+if (!serviceAccountB64) {
+  console.error('ERROR: Missing FIREBASE_SERVICE_ACCOUNT_BASE64 env var');
   process.exit(1);
 }
-
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId:   FIREBASE_PROJECT_ID,
-    clientEmail: FIREBASE_CLIENT_EMAIL,
-    // Railway stores \n as literal \\n — replace back to real newlines
-    privateKey:  FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-  })
-});
+const serviceAccount = JSON.parse(Buffer.from(serviceAccountB64, 'base64').toString('utf8'));
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
 /* ── Stripe Webhook ─────────────────────────────────────────── */
