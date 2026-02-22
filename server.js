@@ -8,7 +8,22 @@ const app    = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 /* ── Firebase Admin ─────────────────────────────────────────── */
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
+const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+if (!rawServiceAccount) {
+  console.error('ERROR: FIREBASE_SERVICE_ACCOUNT environment variable is not set.');
+  process.exit(1);
+}
+
+let serviceAccount;
+try {
+  // Railway sometimes wraps the value in extra quotes — strip them
+  const cleaned = rawServiceAccount.trim().replace(/^"|"$/g, '');
+  serviceAccount = JSON.parse(cleaned);
+} catch (e) {
+  console.error('ERROR: FIREBASE_SERVICE_ACCOUNT is not valid JSON.', e.message);
+  process.exit(1);
+}
+
 admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
 const db = admin.firestore();
 
