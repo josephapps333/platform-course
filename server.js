@@ -8,6 +8,9 @@ const app    = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 /* ── Firebase Admin ─────────────────────────────────────────── */
+// Debug: print all env var names so we can see what Railway is passing
+console.log('ENV KEYS:', Object.keys(process.env).join(', '));
+
 const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
 
 if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
