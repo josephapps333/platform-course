@@ -113,6 +113,8 @@ function escHtml(str) {
     .replace(/"/g, "&quot;");
 }
 
-/* ── Init ───────────────────────────────────────────────────── */
-buildSidebar();
-loadVideo(0);
+/* ── Init (called by auth.js once the user is signed in) ────── */
+function initApp() {
+  buildSidebar();
+  loadVideo(0);
+}

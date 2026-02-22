@@ -1,6 +1,72 @@
 /* ── Reset & Base ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Login Screen ─────────────────────────────────────────── */
+#login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 24px;
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 48px 40px;
+  text-align: center;
+  max-width: 380px;
+  width: 100%;
+}
+
+.login-logo {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.login-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 20px;
+  background: #fff;
+  color: #3c3c3c;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-google:hover {
+  background: #f1f1f1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── App wrapper ──────────────────────────────────────────── */
+#app { display: none; }
+
 :root {
   --bg:          #0f0f0f;
   --surface:     #181818;
@@ -43,6 +109,46 @@ html, body {
   letter-spacing: -0.5px;
   color: var(--accent);
   text-transform: uppercase;
+  flex: 1;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+#user-name {
+  font-size: 0.85rem;
+  color: var(--text);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-signout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-signout:hover {
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 /* ── Main Layout ──────────────────────────────────────────── */
@@ -274,9 +380,11 @@ html, body {
 
 /* Small phone */
 @media (max-width: 480px) {
-  .topbar { padding: 0 14px; }
+  .topbar  { padding: 0 14px; }
   .layout  { padding: 10px; gap: 12px; }
   .sidebar { height: 300px; }
+
+  #user-name { display: none; }
 
   /* Hide thumbnail on very small screens to give titles more room */
   .card-thumb { display: none; }
