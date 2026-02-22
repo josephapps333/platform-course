@@ -10,6 +10,10 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 /* ── Firebase Admin ─────────────────────────────────────────── */
 const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
 
+console.log('FIREBASE_PROJECT_ID  set:', !!FIREBASE_PROJECT_ID,  '| length:', FIREBASE_PROJECT_ID?.length  ?? 0);
+console.log('FIREBASE_CLIENT_EMAIL set:', !!FIREBASE_CLIENT_EMAIL, '| length:', FIREBASE_CLIENT_EMAIL?.length ?? 0);
+console.log('FIREBASE_PRIVATE_KEY  set:', !!FIREBASE_PRIVATE_KEY,  '| length:', FIREBASE_PRIVATE_KEY?.length  ?? 0);
+
 if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
   console.error('ERROR: Missing one or more Firebase env vars: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY');
   process.exit(1);
